@@ -5,6 +5,7 @@
   "repository": "github:nhaug/nodejs",
   "private": true,
   "dependencies": {
+    "bluebird": "^3.7.2",
     "chalk": "^4.1.0",
     "math": "^0.0.3",
     "progress": "^2.0.3",
