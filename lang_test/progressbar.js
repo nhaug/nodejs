@@ -7,3 +7,5 @@ const timer = setInterval(() => {
     clearInterval(timer)
   }
 }, 100);
+
+const car = require("./lib_test");
