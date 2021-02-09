@@ -1,6 +1,13 @@
 {
+  "name": "nhaug/nodejs",
+  "author": "Nils <mail@n-haug.de> (nhaug.wordpress.com)",
+  "version": "0.0.1",
+  "repository": "github:nhaug/nodejs",
+  "private": true,
   "dependencies": {
     "chalk": "^4.1.0",
-    "progress": "^2.0.3"
+    "math": "^0.0.3",
+    "progress": "^2.0.3",
+    "sqlite3": "^5.0.1"
   }
 }
