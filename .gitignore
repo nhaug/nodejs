@@ -1,3 +1,4 @@
 node_modules/
 lang_test/db/*
 wettkampf/database.sqlite3
+database.sqlite3

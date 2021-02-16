@@ -2,7 +2,6 @@
 // Data Access Object (dao)
 
 const sqlite3 = require('sqlite3')
-const Promise = require('bluebird')
 
 class AppDAO {
   constructor(dbFilePath) {
