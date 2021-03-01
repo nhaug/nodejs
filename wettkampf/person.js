@@ -18,7 +18,7 @@ class Person {
   }
 
   create(lastName, firstName, geschlecht) {
-    console.log(lastName, firstName, geschlecht);
+    //console.log(lastName, firstName, geschlecht);
     const sql = `
       INSERT INTO ${this.table}
       (lastName, firstName, geschlecht)
