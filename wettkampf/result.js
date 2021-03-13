@@ -23,33 +23,28 @@ class Result {
       CONSTRAINT results_fk_personId FOREIGN KEY (personId)
         REFERENCES persons(id) ON UPDATE CASCADE ON DELETE CASCADE
       )`
-    return this.dao.run(sql)
+    return await this.dao.run(sql)
   }
 
-  create(lastName, firstName, geschlecht, time, distance, challengeId) {
+  async create(lastName, firstName, geschlecht, time, distance, challengeId) {
     //return new Promise((resolve, reject) => {
-      this.personDao.getByName(lastName,firstName)
-      .then((person) => {
-        console.log(person);
-        if (person == undefined) {
-            this.personDao.create(lastName, firstName, geschlecht)
-        }
-      })
-      .then(() => this.personDao.getByName(lastName,firstName))
-      .then((person) => {
-        let pace = this.calcPace(distance,time);
-        console.log("Geschafft, jetzt können wir das Result eintragen für "+person.id)
-        const sql = `
+      let person = await this.personDao.getByName(lastName,firstName)
+      
+      console.log(person);
+      if (person == undefined) {
+          await this.personDao.create(lastName, firstName, geschlecht)
+      }
+      person = await this.personDao.getByName(lastName,firstName);
+      let pace = this.calcPace(distance,time);
+      
+      console.log("Geschafft, jetzt können wir das Result eintragen für "+person.id)
+        
+      const sql = `
           INSERT INTO ${this.table}
           (personId, challengeId, time, pace)
           VALUES (?,?,?,?)
         `
-        this.dao.run(sql,[person.id,challengeId,time,pace])
-      }).catch((err) => {
-        console.log(err);
-      })
-
-
+      return await this.dao.run(sql,[person.id,challengeId,time,pace])
     }
 
   getAllResults(challengeId) {
@@ -57,7 +52,7 @@ class Result {
       WHERE challengeId = ?
         and results.personId = persons.id
         and results.challengeId = challenges.id
-      ORDER BY time`,[challengeId])
+        ORDER BY results.time`,[challengeId])
   }
 
   calcPace(distance,time) {

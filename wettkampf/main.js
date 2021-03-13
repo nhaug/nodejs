@@ -4,9 +4,11 @@ const AppDAO = require('./dao');
 const Person = require('./person');
 const Challenge = require('./challenge');
 const Result = require('./result');
+//const { resolve } = require('bluebird');
 
 function main() {
   try {
+    console.log('test');
   const dao = new AppDAO('./database.sqlite3');
   const challenge = {name: "1. virtueller Lauf", distance : 5.75}
   const personDao = new Person(dao);
@@ -48,14 +50,15 @@ function main() {
       ]
       //return resultDao.create(lastName, firstName, geschlecht, time, challengeId);
       return Promise.all(results.map((result) => {
-        //const { lastName, firstName, geschlecht, time, challengeId } = result
-        //resultDao.create(lastName, firstName, geschlecht, time, distance, challengeId)
-        new Promise(function(resolve, reject) {
+        const { lastName, firstName, geschlecht, time, challengeId } = result
+        resultDao.create(lastName, firstName, geschlecht, time, distance, challengeId)
+        //resolve("passt"+result.lastName);
+        /*new Promise(function(resolve, reject) {
           setTimeout(() => {
   console.log("Now"+result.lastName);
   resolve(" middle")
 }, 1000)
-        });
+        });*/
       }))
       .then(() => console.log("alles Geschafft"))
     })
