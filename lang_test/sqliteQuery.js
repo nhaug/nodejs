@@ -1,9 +1,9 @@
 const sqlite3 = require('sqlite3');
 
 // Create new file-based DB
-let db = new sqlite3.Database('./db/chinook.db', (err) => {
+const db = new sqlite3.Database('./db/chinook.db', (err) => {
   if (err) {
-    console.error(err.message+err.stack);
+    console.error(err.message + err.stack);
   }
   console.log('Connected to the chinook database.');
 });
@@ -15,8 +15,8 @@ let sql = 'SELECT DISTINCT PlaylistId id, Name name FROM playlists ORDER BY id';
 db.all(sql, [], (err, rows) => {
   // Verarbeite rows hier
   rows.forEach((row) => {
-    console.log("%d | %s",row.id, row.name);
-  })
+    console.log('%d | %s', row.id, row.name);
+  });
 });
 
 // Einzelne Reihe: db.get()
@@ -24,11 +24,9 @@ listId = 1;
 sql = `SELECT PlaylistId id, Name name
        FROM playlists
       WHERE PlaylistId = ?`;
-db.get(sql, [listId], (err, row) => {
-  return row
-    ? console.log("%d | %s",row.id, row.name)
-    : console.log("No playlist found with the id %s",listId);
-})
+db.get(sql, [listId], (err, row) => (row
+  ? console.log('%d | %s', row.id, row.name)
+  : console.log('No playlist found with the id %s', listId)));
 // Besser Reihen nacheinander: db.each()
 sql = `SELECT FirstName firstName,
                   LastName lastName,
@@ -47,6 +45,6 @@ db.each(sql, ['USA'], (err, row) => {
 
 db.close((err) => {
   if (err) {
-      console.error(err.message + errs.stack);
+    console.error(err.message + errs.stack);
   }
-})
+});

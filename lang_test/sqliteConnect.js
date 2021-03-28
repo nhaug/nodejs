@@ -18,7 +18,7 @@ try {
   });
 
   // Create new file-based DB
-  let dba = new sqlite3.Database('./db/test.db', (err) => {
+  let dba = new sqlite3.Database('./test.db', (err) => {
     if (err) {
       console.error(err.message+err.stack);
     }

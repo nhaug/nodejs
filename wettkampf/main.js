@@ -1,105 +1,173 @@
-// Anleitung von
+// NPM-Module
+const debug = require('debug')('app:main');
 
+// lokale Module
 const AppDAO = require('./dao');
 const Person = require('./person');
 const Challenge = require('./challenge');
 const Result = require('./result');
 
-function main() {
-  try {
-  const dao = new AppDAO('./database.sqlite3');
-  const challenge = {name: "1. virtueller Lauf", distance : 5.75}
+async function newMain() {
+  const dao = new AppDAO('./wettkampf/database.sqlite3');
+  const challengeData = { name: '1. virtueller Lauf', distance: 5.75 };
   const personDao = new Person(dao);
   const challengeDao = new Challenge(dao);
   const resultDao = new Result(dao);
-  //const Promise = new Promise();
-  let challengeId;
-  let distance;
+  await challengeDao.createTable();
+  debug('challenge Table created');
+  await personDao.createTable();
+  debug('Person Table created');
+  await resultDao.createTable();
+  debug('Result Table created');
+  const challengeCreated = await challengeDao.create(challengeData);
+  // const challenge = await challengeDao.getById(challengeCreated.id);
+  console.log(challengeCreated);
+  const challenge = await challengeDao.getByField('name', challengeData.name);
+  debug('Challenge: ', challenge);
 
-  challengeDao.createTable()
-    .then(() => personDao.createTable())
-    .then(() => resultDao.createTable())
-    /*.then(() => challenge.getByField('name',challengeData.name))
-    //.then((data) => {
-      if (data === undefined) {
-        console.log("Wettkampf gibts noch nicht")
-        challenge.create(challengeData)
-      } else {
-        challenge = data.id
-        console.log("Wettkampf gibts schon:"+challenge);
-      }
-    })*/
-    .then(() => challengeDao.create(challenge))
-    .then(() => challengeDao.getByField('name',challenge.name))
-    .then((data) => {
-      if (data == null) {
-        console.log("Kein Treffer")
-      }
-      console.log(`Retrieved Challenge from database` + JSON.stringify(data));
-      console.log(`Challenge id = ${data.id}`);
-      console.log(`Challenge name = ${data.name}`);
-      challengeId = data.id;
-      distance = data.distance;
-      const results = [
-        { lastName:"Haug", firstName:"Nilsi", geschlecht:"m", time: "00:20:29", challengeId },
-        { lastName:"Osterwald", firstName:"Konstantin", geschlecht:"m", time :"00:21:40", challengeId },
-        { lastName:"Haug", firstName:"Nils", geschlecht:"m", time: "00:20:29", challengeId },
-        { lastName:"Plesse", firstName:"Maik", geschlecht:"m", time :"00:20:25", challengeId }
-      ]
-      //return resultDao.create(lastName, firstName, geschlecht, time, challengeId);
-      return Promise.all(results.map((result) => {
-        //const { lastName, firstName, geschlecht, time, challengeId } = result
-        //resultDao.create(lastName, firstName, geschlecht, time, distance, challengeId)
-        new Promise(function(resolve, reject) {
-          setTimeout(() => {
-  console.log("Now"+result.lastName);
-  resolve(" middle")
-}, 1000)
-        });
-      }))
-      .then(() => console.log("alles Geschafft"))
-    })
-    .then(() => {
-      //console.log(challengeId);
-      return resultDao.getAllResults(challengeId)})
-    .then((results) => {
-      console.log("THE RESULTS");
+  const results = [
+    {
+      lastName: 'Rohde',
+      firstName: 'Nicolas',
+      time: '00:19:38',
+      geschlecht: 'm',
+    },
+    {
+      lastName: 'Kuklinski',
+      firstName: 'Fabian',
+      time: '00:19:58',
+      geschlecht: 'm',
+    },
+    {
+      lastName: 'Plesse',
+      firstName: 'Maik',
+      time: '00:20:25',
+      geschlecht: 'm',
+    },
+    {
+      lastName: 'Haug',
+      firstName: 'Nils',
+      time: '00:20:29',
+      geschlecht: 'm',
+    },
+    {
+      lastName: 'Wolf',
+      firstName: 'Torsten',
+      time: '00:20:29',
+      geschlecht: 'm',
+    },
+    {
+      lastName: 'Lenfers',
+      firstName: 'Ansger',
+      time: '00:21:42',
+      geschlecht: 'm',
+    },
+    {
+      lastName: 'Kutz',
+      firstName: 'Konstantin',
+      time: '00:21:58',
+      geschlecht: 'm',
+    },
+    {
+      lastName: 'Osterwald',
+      firstName: 'Konstantin',
+      time: '00:22:51',
+      geschlecht: 'm',
+    },
+    {
+      lastName: 'Menke',
+      firstName: 'Lukas',
+      time: '00:23:39',
+      geschlecht: 'm',
+    },
+    {
+      lastName: 'Nagel',
+      firstName: 'Gordon',
+      time: '00:24:04',
+      geschlecht: 'm',
+    },
+    {
+      lastName: 'Bieker',
+      firstName: 'Elias',
+      time: '00:25:22',
+      geschlecht: 'm',
+    },
+    {
+      lastName: 'Webers',
+      firstName: 'Janina',
+      time: '00:26:00',
+      geschlecht: 'w',
+    },
+    {
+      lastName: 'Grotek',
+      firstName: 'Karsten',
+      time: '00:26:33',
+      geschlecht: 'm',
+    },
+    {
+      lastName: 'Sievers',
+      firstName: 'Robin',
+      time: '00:26:44',
+      geschlecht: 'm',
+    },
+    {
+      lastName: 'Kolbe',
+      firstName: 'Ricarda',
+      time: '00:26:44',
+      geschlecht: 'w',
+    },
+    {
+      lastName: 'Plinke',
+      firstName: 'Svenja',
+      time: '00:28:02',
+      geschlecht: 'w',
+    },
+    {
+      lastName: 'Debbary',
+      firstName: 'Matthias',
+      time: '00:28:35',
+      geschlecht: 'm',
+    },
+    {
+      lastName: 'Krettek',
+      firstName: 'Sabine',
+      time: '00:33:34',
+      geschlecht: 'w',
+    },
+    {
+      lastName: 'Schlachte',
+      firstName: 'Roswita',
+      time: '00:37:31',
+      geschlecht: 'w',
+    },
+    {
+      lastName: 'Menke',
+      firstName: 'Milena',
+      time: '00:40:15',
+      geschlecht: 'w',
+    },
+  ];
 
-      results.map((result) => {
-        console.log(result);
-      })
+  const allResultsSaved = await Promise.all(
+    await results.map(async (r) => resultDao.create(r.lastName,
+      r.firstName,
+      r.geschlecht,
+      r.time,
+      challenge.distance,
+      challenge.id)),
+  );
 
-      const male = results.filter((result) => result.geschlecht = "m")
-      let platzierung = 0;
-      let platzierungOffset = 0;
-      let lastTime = "00:00:00";
-      const malePlatzierung = male.map((result) => {
-        const {time} = result;
-        if (time > lastTime) {
-          platzierung = platzierung + platzierungOffset + 1
-          platzierungOffset = 0
-        } else {
-          platzierungOffset++
-        }
-        result.platzierung = platzierung;
-        return result
-      })
-      console.log("Männliche Teilnehmer");
-      console.log(malePlatzierung);
+  debug(allResultsSaved);
 
-      const female = results.filter((result) => result.geschlecht == "w"
-      )
-      console.log("Weibliche Teilnehmer");
-      console.log(female);
-    })
-    .catch((err) => {
-      console.log('Error: ');
-      console.log(JSON.stringify(err));
-      console.log(JSON.stringify(err.stack));
-      throw err
-    })
-  }catch (ex) {
-    console.log("Exception ..."+ex + ex.stack);
-  }
+  const resultsFromDB = await resultDao.getAllResults(challenge.id);
+  const femalePlatzierung = await resultDao.getPlatzierung(challenge.id, 'w');
+  const malePlatzierung = await resultDao.getPlatzierung(challenge.id, 'm');
+
+  debug('Männliche Teilnehmer');
+  debug(malePlatzierung);
+
+  debug('Weibliche Teilnehmer');
+  debug(femalePlatzierung);
 }
-main();
+
+newMain();

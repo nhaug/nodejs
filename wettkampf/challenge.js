@@ -2,38 +2,54 @@
 
 class Challenge {
   constructor(dao) {
-    this.dao = dao
-    this.table = "challenges"
+    this.dao = dao;
+    this.table = 'challenges';
   }
 
-  createTable() {
+  async createTable() {
     const sql = `
     CREATE TABLE IF NOT EXISTS ${this.table} (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT type UNIQUE,
       distance REAL
-      )`
-    return this.dao.run(sql)
+      )`;
+    return this.dao.run(sql);
   }
 
-  create(challenge) {
-    //this.getByField('name',challenge.name)
+  async create(challenge) {
+    // this.getByField('name',challenge.name)
     // Hier weiter!!!
     //  .data((data => ));
     return this.dao.run(
       `INSERT OR IGNORE INTO ${this.table} (name, distance) VALUES (?, ?)`,
-      [challenge.name, challenge.distance])
+      [challenge.name, challenge.distance],
+    );
   }
 
-  getByField(field,value) {
+  async getByField(field, value) {
     return this.dao.get(
-      `SELECT * FROM ${this.table} WHERE ${field} = "${value}"`,)
+      `SELECT * FROM ${this.table} WHERE ${field} = "${value}"`,
+    );
   }
 
-  getById(id) {
+  async getById(id) {
     return this.dao.get(
       `SELECT * FROM ${this.table} WHERE id = ?`,
-      [id])
+      [id],
+    );
+  }
+
+  async getAll() {
+    return this.dao.all(
+      `SELECT * FROM ${this.table}`,
+    );
+  }
+
+  async delete(id) {
+    return this.dao.run(
+      `DELETE FROM ${this.table} WHERE id = ?`,
+      [id],
+    );
   }
 }
 

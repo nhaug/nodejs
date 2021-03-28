@@ -1,14 +1,23 @@
 {
   "name": "nhaug/nodejs",
   "author": "Nils <mail@n-haug.de> (nhaug.wordpress.com)",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "repository": "github:nhaug/nodejs",
   "private": true,
   "dependencies": {
-    "bluebird": "^3.7.2",
     "chalk": "^4.1.0",
+    "debug": "^2.6.9",
+    "express": "^4.17.1",
+    "joi": "^17.4.0",
     "math": "^0.0.3",
+    "morgan": "^1.10.0",
     "progress": "^2.0.3",
     "sqlite3": "^5.0.1"
+  },
+  "devDependencies": {
+    "eslint": "^7.22.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-google": "^0.14.0",
+    "nodemon": "^2.0.7"
   }
 }

@@ -1,16 +1,16 @@
 // result.js
-const Person = require('./person')
+const Person = require('./person');
 const Challenge = require('./challenge');
-class Result {
 
+class Result {
   constructor(dao) {
-      this.dao = dao
-      this.personDao = new Person(this.dao);
-      this.challengeDao = new Challenge(this.dao);
-      this.table = 'results';
+    this.dao = dao;
+    this.personDao = new Person(this.dao);
+    this.challengeDao = new Challenge(this.dao);
+    this.table = 'results';
   }
 
-  createTable() {
+  async createTable() {
     const sql = `
     CREATE TABLE IF NOT EXISTS results (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -22,57 +22,85 @@ class Result {
         REFERENCES challenges(id) ON UPDATE CASCADE ON DELETE CASCADE
       CONSTRAINT results_fk_personId FOREIGN KEY (personId)
         REFERENCES persons(id) ON UPDATE CASCADE ON DELETE CASCADE
-      )`
-    return this.dao.run(sql)
+      )`;
+    return this.dao.run(sql);
   }
 
-  create(lastName, firstName, geschlecht, time, distance, challengeId) {
-    //return new Promise((resolve, reject) => {
-      this.personDao.getByName(lastName,firstName)
-      .then((person) => {
-        console.log(person);
-        if (person == undefined) {
-            this.personDao.create(lastName, firstName, geschlecht)
-        }
-      })
-      .then(() => this.personDao.getByName(lastName,firstName))
-      .then((person) => {
-        let pace = this.calcPace(distance,time);
-        console.log("Geschafft, jetzt können wir das Result eintragen für "+person.id)
-        const sql = `
+  async create(lastName, firstName, geschlecht, time, distance, challengeId) {
+    // return new Promise((resolve, reject) => {
+    let person = await this.personDao.getByName(lastName, firstName);
+    if (!person) {
+      console.log('Es ist was zu tun');
+      await this.personDao.create(lastName, firstName, geschlecht);
+      person = await this.personDao.getByName(lastName, firstName);
+    }
+    this.time = time;
+    this.distance = distance;
+    const pace = this.calcPace();
+    const resultAlreadyExists = await this.checkIfResultExists(challengeId, person.id);
+    if (!resultAlreadyExists) {
+      console.log(`Geschafft, jetzt können wir das Result eintragen für ${person.lastName}`);
+      const sql = `
           INSERT INTO ${this.table}
           (personId, challengeId, time, pace)
           VALUES (?,?,?,?)
-        `
-        this.dao.run(sql,[person.id,challengeId,time,pace])
-      }).catch((err) => {
-        console.log(err);
-      })
-
-
+        `;
+      return this.dao.run(sql, [person.id, challengeId, time, pace]);
     }
+    return resultAlreadyExists;
+  }
 
-  getAllResults(challengeId) {
+  async checkIfResultExists(challengeId, personId) {
+    return this.dao.get(`SELECT * FROM results
+      WHERE results.challengeId = ?
+        and results.personId = ?`, [challengeId, personId]);
+  }
+
+  async getAllResults(challengeId) {
     return this.dao.all(`SELECT * FROM results, persons, challenges
       WHERE challengeId = ?
         and results.personId = persons.id
         and results.challengeId = challenges.id
-      ORDER BY time`,[challengeId])
+      ORDER BY time`, [challengeId]);
   }
 
-  calcPace(distance,time) {
-    let timeArray = time.split(":");
-    let hours = parseInt(timeArray[0]);
-    let minutes = parseInt(timeArray[1]);
-    let seconds = parseInt(timeArray[2]);
-    let totalSeconds = hours * 3600 + minutes * 60 + seconds;
-    let paceInSeconds = totalSeconds / distance;
-    let paceMinutes = Math.floor((paceInSeconds / 60));
-    let paceSeconds = Math.round(paceInSeconds % 60);
-    let pace = paceMinutes+":"+paceSeconds
-    //return {length, hours, minutes, seconds, totalSeconds, paceInSeconds, paceMinutes, paceSeconds, pace}
+  async getPlatzierung(challengeId, geschlecht) {
+    let results = await this.getAllResults(challengeId);
+    console.log(geschlecht);
+    console.log(challengeId);
+    if (geschlecht) {
+      results = results.filter((result) => result.geschlecht === geschlecht);
+    }
+    let platzierung = 0;
+    let platzierungOffset = 0;
+    let lastTime = '00:00:00';
+    const platzierungen = results.map((result) => {
+      const { time } = result;
+      if (time > lastTime) {
+        platzierung = platzierung + platzierungOffset + 1;
+        platzierungOffset = 0;
+      } else {
+        platzierungOffset++;
+      }
+      lastTime = time;
+      result.platzierung = platzierung;
+      return result;
+    });
+    return platzierungen;
+  }
+
+  calcPace() {
+    const timeArray = this.time.split(':');
+    const hours = parseInt(timeArray[0], 10);
+    const minutes = parseInt(timeArray[1], 10);
+    const seconds = parseInt(timeArray[2], 10);
+    const totalSeconds = hours * 3600 + minutes * 60 + seconds;
+    const paceInSeconds = totalSeconds / this.distance;
+    const paceMinutes = Math.floor((paceInSeconds / 60));
+    const paceSeconds = Math.round(paceInSeconds % 60);
+    const pace = `${paceMinutes}:${paceSeconds}`;
     return pace;
-  };
+  }
 }
 
 module.exports = Result;
