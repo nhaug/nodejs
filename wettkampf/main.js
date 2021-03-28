@@ -6,6 +6,7 @@ const AppDAO = require('./dao');
 const Person = require('./person');
 const Challenge = require('./challenge');
 const Result = require('./result');
+//const { resolve } = require('bluebird');
 
 async function newMain() {
   const dao = new AppDAO('./wettkampf/database.sqlite3');
