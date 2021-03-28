@@ -1,5 +1,6 @@
 const Joi = require('joi');
-const {Router} = require('express');
+const { Router } = require('express');
+const debug = require('debug')('app:routes');
 
 const router = new Router();
 
@@ -29,14 +30,14 @@ function validateBody(body) {
 
 // Handler einrichten
 router.get('/', async (req, res) => {
-  const {geschlecht, challengeId} = req.query;
+  const { geschlecht, challengeId } = req.query;
   const allResults = await resultDao.getPlatzierung(challengeId, geschlecht);
   // res.send(allResults);
   res.send(allResults);
 });
 
 router.post('/', async (req, res) => {
-  const {error} = validateBody(req.body);
+  const { error } = validateBody(req.body);
   if (error) return res.status(400).send(error.details[0].message);
   const {
     lastName, firstName, geschlecht, time, challengeId,
@@ -45,23 +46,23 @@ router.post('/', async (req, res) => {
   const challenge = await challengeDao.getById(challengeId);
 
   const postedResult = await resultDao.create(lastName,
-      firstName,
-      geschlecht,
-      time,
-      challenge.distance,
-      challengeId);
+    firstName,
+    geschlecht,
+    time,
+    challenge.distance,
+    challengeId);
   return res.send(postedResult);
 });
 
 router.put('/:resultId', async (req, res) => {
-  const {resultId} = req.params;
+  const { resultId } = req.params;
   const result = await resultDao.getById(resultId);
   if (!result) {
     res.status(404);
     return res.send(`No Result for ID ${req.params.resultId} found`);
   }
 
-  const {error} = validateBody(req.body);
+  const { error } = validateBody(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
   const {
@@ -78,14 +79,15 @@ router.put('/:resultId', async (req, res) => {
 });
 
 router.delete('/:resultId', async (req, res) => {
-  const {resultId} = req.query;
+  const { resultId } = req.query;
   const result = await resultDao.getById(resultId);
   if (!result) {
     res.status(404);
     return res.send(`No Result for ID ${req.params.resultId} found`);
   }
-  const done = resultDao.delete(result);
 
+  const done = resultDao.delete(result);
+  debug(done);
   return res.send(done);
 });
 

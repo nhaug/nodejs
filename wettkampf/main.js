@@ -13,7 +13,7 @@ const Result = require('./result');
  */
 async function newMain() {
   const dao = new AppDAO('./wettkampf/database.sqlite3');
-  const challengeData = {name: '1. virtueller Lauf', distance: 5.75};
+  const challengeData = { name: '1. virtueller Lauf', distance: 5.75 };
   const personDao = new Person(dao);
   const challengeDao = new Challenge(dao);
   const resultDao = new Result(dao);
@@ -25,7 +25,7 @@ async function newMain() {
   debug('Result Table created');
   const challengeCreated = await challengeDao.create(challengeData);
   // const challenge = await challengeDao.getById(challengeCreated.id);
-  console.log(challengeCreated);
+  debug(challengeCreated);
   const challenge = await challengeDao.getByField('name', challengeData.name);
   debug('Challenge: ', challenge);
 
@@ -153,12 +153,12 @@ async function newMain() {
   ];
 
   const allResultsSaved = await Promise.all(
-      await results.map(async (r) => resultDao.create(r.lastName,
-          r.firstName,
-          r.geschlecht,
-          r.time,
-          challenge.distance,
-          challenge.id)),
+    await results.map(async (r) => resultDao.create(r.lastName,
+      r.firstName,
+      r.geschlecht,
+      r.time,
+      challenge.distance,
+      challenge.id)),
   );
 
   debug(allResultsSaved);

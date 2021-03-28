@@ -45,7 +45,6 @@ class Person {
     return this.dao.run(sql, [lastName, firstName, geschlecht]);
   }
 
-
   /**
   * Gibt die Person zu Vor und Nachname aus
   * @param {String} lastName
@@ -54,7 +53,7 @@ class Person {
   */
   async getByName(lastName, firstName) {
     return this.dao.get(
-        `SELECT * FROM ${this.table}
+      `SELECT * FROM ${this.table}
         WHERE lastName = ? AND firstName = ?`, [lastName, firstName],
     );
   }
@@ -76,7 +75,7 @@ class Person {
    */
   async getAll() {
     return this.dao.all(
-        `SELECT * FROM ${this.table}`,
+      `SELECT * FROM ${this.table}`,
     );
   }
 }

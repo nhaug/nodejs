@@ -1,5 +1,6 @@
 const Joi = require('joi');
-const {Router} = require('express');
+const { Router } = require('express');
+const debug = require('debug')('app:routes');
 
 const router = new Router();
 const AppDAO = require('../dao');
@@ -27,14 +28,14 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/:challengeId', async (req, res) => {
-  const {challengeId} = req.params;
+  const { challengeId } = req.params;
   const challenge = await challengeDao.getById(challengeId);
   // res.send(allResults);
   return res.send(challenge);
 });
 
 router.post('/', async (req, res) => {
-  const {error} = validateBody(req.body);
+  const { error } = validateBody(req.body);
   if (error) return res.status(400).send(error.details[0].message);
   const {
     name, distance,
@@ -51,13 +52,13 @@ router.post('/', async (req, res) => {
 });
 
 router.put('/:challengeId', async (req, res) => {
-  const {challengeId} = req.params;
+  const { challengeId } = req.params;
   const challenge = await challengeDao.getById(challengeId);
   if (!challenge) {
     res.send(`No challenge for ID ${req.params.challengeId} found`);
     return res.status(404);
   }
-  const {error} = validateBody(req.body);
+  const { error } = validateBody(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
   const {
@@ -73,8 +74,8 @@ router.put('/:challengeId', async (req, res) => {
 });
 
 router.delete('/:challengeId', async (req, res) => {
-  const {challengeId} = req.params;
-  console.log(challengeId);
+  const { challengeId } = req.params;
+  debug(challengeId);
   const challenge = await challengeDao.getById(challengeId);
   if (!challenge) {
     res.status(404);

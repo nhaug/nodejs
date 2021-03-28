@@ -1,5 +1,6 @@
 const Joi = require('joi');
-const {Router} = require('express');
+const { Router } = require('express');
+const debug = require('debug')('app:routes');
 
 const AppDAO = require('../dao');
 const Person = require('../person');
@@ -25,34 +26,33 @@ function validateBody(body) {
 
 // Handler einrichten
 router.get('/', async (req, res) => {
-  console.log('get Person');
+  debug('get Person');
   const all = await personDao.getAll();
   return res.send(all);
 });
 
 router.post('/', async (req, res) => {
-  const {error} = validateBody(req.body);
+  const { error } = validateBody(req.body);
   if (error) return res.status(400).send(error.details[0].message);
   const {
     lastName, firstName, geschlecht,
   } = req.body;
 
   const posted = await personDao.create(lastName,
-      firstName,
-      geschlecht);
+    firstName,
+    geschlecht);
   return res.send(posted);
 });
 
 router.put('/:personId', async (req, res) => {
-  const {personId} = req.params;
+  const { personId } = req.params;
   const person = await personDao.getById(personId);
   if (!person) {
     res.status(404);
     return res.send(`No Result for ID ${req.params.resultId} found`);
   }
 
-
-  const {error} = validateBody(req.body);
+  const { error } = validateBody(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
   const {
@@ -69,7 +69,7 @@ router.put('/:personId', async (req, res) => {
 });
 
 router.delete('/:personId', async (req, res) => {
-  const {personId} = req.query;
+  const { personId } = req.query;
   const person = await personDao.getById(personId);
   if (!person) {
     res.status(404);

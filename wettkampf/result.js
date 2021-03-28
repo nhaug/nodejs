@@ -1,7 +1,7 @@
-// result.js
+const debug = require('debug')('app:main');
 const Person = require('./person');
 const Challenge = require('./challenge');
-const debug = require('debug')('app:main');
+
 /**
  *
  */
@@ -51,7 +51,7 @@ class Result {
     // return new Promise((resolve, reject) => {
     let person = await this.personDao.getByName(lastName, firstName);
     if (!person) {
-      console.log('Es ist was zu tun');
+      debug('Es ist was zu tun');
       await this.personDao.create(lastName, firstName, geschlecht);
       person = await this.personDao.getByName(lastName, firstName);
     }
@@ -105,8 +105,8 @@ class Result {
    */
   async getPlatzierung(challengeId, geschlecht) {
     let results = await this.getAllResults(challengeId);
-    console.log(geschlecht);
-    console.log(challengeId);
+    debug(geschlecht);
+    debug(challengeId);
     if (geschlecht) {
       results = results.filter((result) => result.geschlecht === geschlecht);
     }
@@ -114,14 +114,15 @@ class Result {
     let platzierungOffset = 0;
     let lastTime = '00:00:00';
     const platzierungen = results.map((result) => {
-      const {time} = result;
+      const { time } = result;
       if (time > lastTime) {
         platzierung = platzierung + platzierungOffset + 1;
         platzierungOffset = 0;
       } else {
-        platzierungOffset++;
+        platzierungOffset += 1;
       }
       lastTime = time;
+      // eslint-disable-next-line no-param-reassign
       result.platzierung = platzierung;
       return result;
     });
