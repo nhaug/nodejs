@@ -1,14 +1,18 @@
 const Joi = require('joi');
-const { Router } = require('express');
+const {Router} = require('express');
 
-const router = Router();
-const Result = require('../result');
+const router = new Router();
 const AppDAO = require('../dao');
 const Challenge = require('../challenge');
 
 const dao = new AppDAO('./wettkampf/database.sqlite3');
 const challengeDao = new Challenge(dao);
 
+/**
+ * Validate Body
+ * @param {*} body
+ * @return {boolean} Body valid
+ */
 function validateBody(body) {
   const schema = Joi.object({
     name: Joi.string().required(),
@@ -23,14 +27,14 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/:challengeId', async (req, res) => {
-  const { challengeId } = req.params;
+  const {challengeId} = req.params;
   const challenge = await challengeDao.getById(challengeId);
   // res.send(allResults);
   return res.send(challenge);
 });
 
 router.post('/', async (req, res) => {
-  const { error } = validateBody(req.body);
+  const {error} = validateBody(req.body);
   if (error) return res.status(400).send(error.details[0].message);
   const {
     name, distance,
@@ -47,11 +51,13 @@ router.post('/', async (req, res) => {
 });
 
 router.put('/:challengeId', async (req, res) => {
-  const { challengeId } = req.params;
+  const {challengeId} = req.params;
   const challenge = await challengeDao.getById(challengeId);
-  if (!challenge) return res.status(404).send(`No challenge for ID ${req.params.challengeId} found`);
-
-  const { error } = validateBody(req.body);
+  if (!challenge) {
+    res.send(`No challenge for ID ${req.params.challengeId} found`);
+    return res.status(404);
+  }
+  const {error} = validateBody(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
   const {
@@ -67,10 +73,13 @@ router.put('/:challengeId', async (req, res) => {
 });
 
 router.delete('/:challengeId', async (req, res) => {
-  const { challengeId } = req.params;
+  const {challengeId} = req.params;
   console.log(challengeId);
   const challenge = await challengeDao.getById(challengeId);
-  if (!challenge) return res.status(404).send(`No challenge for ID ${req.params.resultId} found`);
+  if (!challenge) {
+    res.status(404);
+    return res.send(`No challenge for ID ${req.params.resultId} found`);
+  }
 
   const done = await challengeDao.delete(challenge.id);
   return res.send(done);

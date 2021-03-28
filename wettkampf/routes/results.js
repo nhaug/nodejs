@@ -1,4 +1,7 @@
 const Joi = require('joi');
+const {Router} = require('express');
+
+const router = new Router();
 
 const Result = require('../result');
 const AppDAO = require('../dao');
