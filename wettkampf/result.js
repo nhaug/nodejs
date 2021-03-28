@@ -1,7 +1,7 @@
 // result.js
 const Person = require('./person');
 const Challenge = require('./challenge');
-
+const debug = require('debug')('app:main');
 /**
  *
  */
@@ -58,9 +58,10 @@ class Result {
     this.time = time;
     this.distance = distance;
     const pace = this.calcPace();
+    // eslint-disable-next-line max-len
     const resultAlreadyExists = await this.checkIfResultExists(challengeId, person.id);
     if (!resultAlreadyExists) {
-      console.log(`Geschafft, jetzt können wir das Result eintragen für ${person.lastName}`);
+      debug(`Result eintragen für ${person.lastName}`);
       const sql = `
           INSERT INTO ${this.table}
           (personId, challengeId, time, pace)
@@ -72,10 +73,10 @@ class Result {
   }
 
   /**
-   *
+   * Check if Result already exists
    * @param {*} challengeId
    * @param {*} personId
-   * @returns
+   * @return {boolean} Exists
    */
   async checkIfResultExists(challengeId, personId) {
     return this.dao.get(`SELECT * FROM results
@@ -84,9 +85,9 @@ class Result {
   }
 
   /**
-   *
+   *Alle Results für einen Wettkampf
    * @param {*} challengeId
-   * @returns
+   * @return {JSON} Result
    */
   async getAllResults(challengeId) {
     return this.dao.all(`SELECT * FROM results, persons, challenges
@@ -97,10 +98,10 @@ class Result {
   }
 
   /**
-   *
+   * Alle Results inkl. Platzierung
    * @param {*} challengeId
    * @param {*} geschlecht
-   * @returns
+   * @return {JSON} Alle Results mit Platzierung
    */
   async getPlatzierung(challengeId, geschlecht) {
     let results = await this.getAllResults(challengeId);
@@ -128,8 +129,8 @@ class Result {
   }
 
   /**
-   *
-   * @returns
+   * Berechnet die Pace zur eingebenen Dauer und Länge der Strecke
+   * @return {String} pace in 'mm:ss'
    */
   calcPace() {
     const timeArray = this.time.split(':');

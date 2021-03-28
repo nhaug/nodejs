@@ -1,17 +1,19 @@
 const Joi = require('joi');
 const {Router} = require('express');
 
-const router = Router();
+
 const AppDAO = require('../dao');
 const Person = require('../person');
 
 const dao = new AppDAO('./wettkampf/database.sqlite3');
+
+const router = Router();
 const personDao = new Person(dao);
 
 /**
- *
+ * Prüfe ob der Body ok ist
  * @param {*} body
- * @returns
+ * @return {Boolean} Body is valid
  */
 function validateBody(body) {
   const schema = Joi.object({
@@ -45,7 +47,11 @@ router.post('/', async (req, res) => {
 router.put('/:personId', async (req, res) => {
   const {personId} = req.params;
   const person = await personDao.getById(personId);
-  if (!person) return res.status(404).send(`No Result for ID ${req.params.resultId} found`);
+  if (!person) {
+    res.status(404);
+    return res.send(`No Result for ID ${req.params.resultId} found`);
+  }
+
 
   const {error} = validateBody(req.body);
   if (error) return res.status(400).send(error.details[0].message);
@@ -66,7 +72,10 @@ router.put('/:personId', async (req, res) => {
 router.delete('/:personId', async (req, res) => {
   const {personId} = req.query;
   const person = await personDao.getById(personId);
-  if (!person) return res.status(404).send(`No Result for ID ${req.params.resultId} found`);
+  if (!person) {
+    res.status(404);
+    return res.send(`No Result for ID ${req.params.resultId} found`);
+  }
   const done = personDao.delete(person);
 
   return res.send(done);
