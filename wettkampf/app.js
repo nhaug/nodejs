@@ -29,9 +29,12 @@ app.listen(port, () => {
   debug(`Listening on Port .. ${port}`);
 });
 
+/**
+ *
+ */
 async function initApp() {
   const dao = new AppDAO('./wettkampf/database.sqlite3');
-  const challengeData = { name: '1. virtueller Lauf', distance: 5.75 };
+  const challengeData = {name: '1. virtueller Lauf', distance: 5.75};
   const personDao = new Person(dao);
   const challengeDao = new Challenge(dao);
   const resultDao = new Result(dao);

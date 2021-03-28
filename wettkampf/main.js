@@ -6,11 +6,14 @@ const AppDAO = require('./dao');
 const Person = require('./person');
 const Challenge = require('./challenge');
 const Result = require('./result');
-//const { resolve } = require('bluebird');
+// const { resolve } = require('bluebird');
 
+/**
+ * Main Methode zum Testen
+ */
 async function newMain() {
   const dao = new AppDAO('./wettkampf/database.sqlite3');
-  const challengeData = { name: '1. virtueller Lauf', distance: 5.75 };
+  const challengeData = {name: '1. virtueller Lauf', distance: 5.75};
   const personDao = new Person(dao);
   const challengeDao = new Challenge(dao);
   const resultDao = new Result(dao);
@@ -150,12 +153,12 @@ async function newMain() {
   ];
 
   const allResultsSaved = await Promise.all(
-    await results.map(async (r) => resultDao.create(r.lastName,
-      r.firstName,
-      r.geschlecht,
-      r.time,
-      challenge.distance,
-      challenge.id)),
+      await results.map(async (r) => resultDao.create(r.lastName,
+          r.firstName,
+          r.geschlecht,
+          r.time,
+          challenge.distance,
+          challenge.id)),
   );
 
   debug(allResultsSaved);
@@ -163,6 +166,9 @@ async function newMain() {
   const resultsFromDB = await resultDao.getAllResults(challenge.id);
   const femalePlatzierung = await resultDao.getPlatzierung(challenge.id, 'w');
   const malePlatzierung = await resultDao.getPlatzierung(challenge.id, 'm');
+
+  debug('Alle Teilnehmer');
+  debug(resultsFromDB);
 
   debug('Männliche Teilnehmer');
   debug(malePlatzierung);

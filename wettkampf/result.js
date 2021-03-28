@@ -2,7 +2,14 @@
 const Person = require('./person');
 const Challenge = require('./challenge');
 
+/**
+ *
+ */
 class Result {
+  /**
+   *
+   * @param {*} dao
+   */
   constructor(dao) {
     this.dao = dao;
     this.personDao = new Person(this.dao);
@@ -10,6 +17,10 @@ class Result {
     this.table = 'results';
   }
 
+  /**
+   *
+   * @return {Object} Table Created
+   */
   async createTable() {
     const sql = `
     CREATE TABLE IF NOT EXISTS results (
@@ -26,6 +37,16 @@ class Result {
     return this.dao.run(sql);
   }
 
+  /**
+   * Erstellt Result mit Namen
+   * @param {*} lastName
+   * @param {*} firstName
+   * @param {*} geschlecht
+   * @param {*} time
+   * @param {*} distance
+   * @param {*} challengeId
+   * @return {String} Erstellte ID
+   */
   async create(lastName, firstName, geschlecht, time, distance, challengeId) {
     // return new Promise((resolve, reject) => {
     let person = await this.personDao.getByName(lastName, firstName);
@@ -50,12 +71,23 @@ class Result {
     return resultAlreadyExists;
   }
 
+  /**
+   *
+   * @param {*} challengeId
+   * @param {*} personId
+   * @returns
+   */
   async checkIfResultExists(challengeId, personId) {
     return this.dao.get(`SELECT * FROM results
       WHERE results.challengeId = ?
         and results.personId = ?`, [challengeId, personId]);
   }
 
+  /**
+   *
+   * @param {*} challengeId
+   * @returns
+   */
   async getAllResults(challengeId) {
     return this.dao.all(`SELECT * FROM results, persons, challenges
       WHERE challengeId = ?
@@ -64,6 +96,12 @@ class Result {
       ORDER BY time`, [challengeId]);
   }
 
+  /**
+   *
+   * @param {*} challengeId
+   * @param {*} geschlecht
+   * @returns
+   */
   async getPlatzierung(challengeId, geschlecht) {
     let results = await this.getAllResults(challengeId);
     console.log(geschlecht);
@@ -75,7 +113,7 @@ class Result {
     let platzierungOffset = 0;
     let lastTime = '00:00:00';
     const platzierungen = results.map((result) => {
-      const { time } = result;
+      const {time} = result;
       if (time > lastTime) {
         platzierung = platzierung + platzierungOffset + 1;
         platzierungOffset = 0;
@@ -89,6 +127,10 @@ class Result {
     return platzierungen;
   }
 
+  /**
+   *
+   * @returns
+   */
   calcPace() {
     const timeArray = this.time.split(':');
     const hours = parseInt(timeArray[0], 10);
