@@ -1,13 +1,12 @@
 const Joi = require('joi');
 const {Router} = require('express');
 
-
 const AppDAO = require('../dao');
 const Person = require('../person');
 
 const dao = new AppDAO('./wettkampf/database.sqlite3');
 
-const router = Router();
+const router = new Router();
 const personDao = new Person(dao);
 
 /**
